@@ -1,6 +1,6 @@
 export enum ErrorTypes {
   EntityNotFound = 'EntityNotFound',
-  invalidMongoId = 'InvalidMongoId',
+  InvalidMongoId = 'InvalidMongoId',
 }
 
 type ErrorResponseObj = {
