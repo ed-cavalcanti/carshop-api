@@ -23,4 +23,14 @@ export default class CarController {
       next(err);
     }
   }
+
+  public async readOne(req: Request, res: Response<ICar>, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const car = await this._service.readOne(id) as unknown as ICar;
+      return res.status(200).json(car);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
