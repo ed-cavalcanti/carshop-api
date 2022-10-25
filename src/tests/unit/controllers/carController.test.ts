@@ -6,6 +6,7 @@ import { carMock, carMockWithId } from '../mocks/carMock';
 import CarController from '../../../controllers/CarController';
 import CarService from '../../../services/CarService';
 import CarModel from '../../../models/Car';
+import { ErrorTypes } from '../../../errors/catalog';
 
 describe('Car controller', () => {
   const carModel = new CarModel();
@@ -19,7 +20,10 @@ describe('Car controller', () => {
   };
 
   before(() => {
-    sinon.stub(carService, 'create').resolves(carMock);
+    sinon.stub(carService, 'create').resolves(carMockWithId);
+    sinon.stub(carService, 'readOne')
+      .onCall(0).resolves(carMockWithId)
+      .onCall(1).resolves(null);
 
     res.status = sinon.stub().returns(res);
     res.json = sinon.stub().returns(res);
@@ -34,7 +38,22 @@ describe('Car controller', () => {
       req.body = carMock;
       await carController.create(req, res, next);
       expect((res.status as sinon.SinonStub).calledWith(201)).to.be.true;
-      expect((res.json as sinon.SinonStub).calledWith(carMock)).to.be.true;
+      expect((res.json as sinon.SinonStub).calledWith(carMockWithId)).to.be.true;
+    });
+  });
+
+  describe('searching a car', () => {
+    it('successfully found', async () => {
+      const carFound = await carService.readOne(carMockWithId._id);
+      expect(carFound).to.be.deep.equal(carMockWithId);
+    });
+
+    it('_id not found', async () => {
+      try {
+        await carService.readOne('wrong_id');
+      } catch (err: any) {
+        expect(err.message).to.be.equal(ErrorTypes.ObjectNotFound);
+      }
     });
   });
 });
