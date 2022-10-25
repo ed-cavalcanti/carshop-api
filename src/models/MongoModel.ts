@@ -17,7 +17,7 @@ abstract class MongoModel<T> implements IModel<T> {
   update = async (id: string, obj: Partial<T>) =>
     this._model.findByIdAndUpdate(id, obj, { new: true });
 
-  delete = async (id: string): Promise<T | null> => this._model.findByIdAndDelete(id);
+  delete = async (_id: string): Promise<T | null> => this._model.findByIdAndDelete({ _id });
 }
 
 export default MongoModel;
