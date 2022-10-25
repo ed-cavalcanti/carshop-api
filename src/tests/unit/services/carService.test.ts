@@ -12,6 +12,7 @@ describe('Car service', () => {
 
   before(() => {
     sinon.stub(carModel, 'create').resolves(carMockWithId);
+    sinon.stub(carModel, 'readOne').resolves(carMockWithId);
   });
 
   after(() => {
@@ -35,4 +36,20 @@ describe('Car service', () => {
       expect(error).to.be.instanceOf(ZodError);
     });
   });
+
+  describe('searching a car', () => {
+    it('successfully found', async () => {
+      const carFound = await carService.readOne(carMockWithId._id);
+      expect(carFound).to.be.deep.equal(carMockWithId);
+    })
+
+    it('_id not found', async () => {
+      try {
+        await carService.readOne('wrong_id');
+      } catch (err: any) {
+        expect(err.message).to.be.equal('InvalidMongoId');
+      }
+    });
+  })
+
 });
