@@ -33,4 +33,15 @@ export default class CarController {
       next(err);
     }
   }
+
+  public async update(req: Request, res: Response<ICar>, next: NextFunction) {
+    try {
+      const data = req.body;
+      const { id } = req.params;
+      const result = await this._service.update(id, data) as unknown as ICar;
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
