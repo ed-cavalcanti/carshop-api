@@ -9,7 +9,8 @@ describe('Car Model', () => {
 
   before(() => {
     sinon.stub(Model, 'create').resolves(carMockWithId);
-    sinon.stub(Model, 'findOne').resolves(carMockWithId); 
+    sinon.stub(Model, 'findOne').resolves(carMockWithId);
+    sinon.stub(Model, 'find').resolves([carMockWithId]);
   });
 
   after(() => {
@@ -35,6 +36,14 @@ describe('Car Model', () => {
       } catch (err: any) {
         expect(err.message).to.be.equal('Id must have 24 hexadecimal characters');
       }
+    });
+  });
+
+  describe('searching all cars', () => {
+    it('Successfully found', async () => {
+      const carFound = await carModel.read();
+      expect(carFound[0]).to.be.deep.equal(carMockWithId);
+      expect(carFound).to.be.an('array');
     });
   });
 });
