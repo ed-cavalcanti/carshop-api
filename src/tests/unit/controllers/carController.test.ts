@@ -21,9 +21,8 @@ describe('Car controller', () => {
 
   before(() => {
     sinon.stub(carService, 'create').resolves(carMockWithId);
-    sinon.stub(carService, 'readOne')
-      .onCall(0).resolves(carMockWithId)
-      .onCall(1).resolves(null);
+    sinon.stub(carService, 'readOne').resolves(carMockWithId);
+    sinon.stub(carService, 'read').resolves([carMockWithId]);
 
     res.status = sinon.stub().returns(res);
     res.json = sinon.stub().returns(res);
@@ -44,16 +43,20 @@ describe('Car controller', () => {
 
   describe('searching a car', () => {
     it('successfully found', async () => {
-      const carFound = await carService.readOne(carMockWithId._id);
-      expect(carFound).to.be.deep.equal(carMockWithId);
-    });
+      req.params = { id: 'fake_id' }
+      await carController.readOne(req, res, next);
 
-    it('_id not found', async () => {
-      try {
-        await carService.readOne('wrong_id');
-      } catch (err: any) {
-        expect(err.message).to.be.equal(ErrorTypes.ObjectNotFound);
-      }
+      expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect((res.json as sinon.SinonStub).calledWith(carMockWithId)).to.be.true;
+    });
+  });
+
+  describe('searching all cars', () => {
+    it('successfully found', async () => {
+      await carController.read(req, res, next);
+
+      expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect((res.json as sinon.SinonStub).calledWith([carMockWithId])).to.be.true;
     });
   });
 });
