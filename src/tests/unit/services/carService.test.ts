@@ -13,6 +13,7 @@ describe('Car service', () => {
   before(() => {
     sinon.stub(carModel, 'create').resolves(carMockWithId);
     sinon.stub(carModel, 'readOne').resolves(carMockWithId);
+    sinon.stub(carModel, 'read').resolves([carMockWithId]);
   });
 
   after(() => {
@@ -50,6 +51,14 @@ describe('Car service', () => {
         expect(err.message).to.be.equal('InvalidMongoId');
       }
     });
-  })
+  });
+
+  describe('searching all cars', () => {
+    it('successfully found', async () => {
+      const carsFound = await carService.read();
+      expect(carsFound).to.be.an('array');
+      expect(carsFound[0]).to.be.deep.equal(carMockWithId);
+    });
+  });
 
 });
